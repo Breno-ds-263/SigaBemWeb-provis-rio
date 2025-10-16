@@ -1,8 +1,11 @@
 
-export default function header(){
+
+
+
+export default function Header(){
 
   return(
-    <header>
+    <div className = "flex flex-row bg-neutral-900">
     <a>Sigabem</a>
         <nav>
             <a href="/sigabem/home">Home</a>
@@ -10,7 +13,7 @@ export default function header(){
             <a href="/sigabem/notifications">Notificações</a>
             <a href="/sigabem/administrators">Administração</a>
         </nav>
-    </header>
+    </div>
   )
 
 }
