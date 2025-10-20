@@ -1,70 +1,138 @@
-import React from 'react';
-import { MapContainer, TileLayer, LayerGroup, LayersControl } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css'; // Importa os estilos CSS do Leaflet
+import React, { useState } from "react";
+import {
+  MapContainer,
+  TileLayer,
+  Circle,
+  Marker,
+  LayersControl,
+  LayerGroup,
+  useMapEvents,
+  Popup,
+} from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
+import type { LatLngExpression } from "leaflet";
 
-// Configurações do Mapa
-const MAP_CENTER: [number, number] = [-8.0476, -34.8770]; // Centro do mapa (Recife)
-const MAP_ZOOM: number = 10; // Nível de zoom inicial
-const TILE_URL: string = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 
-/**
- * Componente do Mapa.
- * Inicializa o mapa Leaflet e o controle de camadas usando react-leaflet.
- */
-function Map() {
+// ---------------------
+// Configurações básicas
+// ---------------------
+const MAP_CENTER: LatLngExpression = [-8.0476, -34.877];
+const MAP_ZOOM = 13;
+const TILE_URL = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+const API_URL = "http://seu-backend-aqui.com"; // ⬅️ ajuste isso
+
+// Ícone customizado de parada (opcional)
+const busStopIcon = new L.Icon({
+  iconUrl:
+    "https://cdn-icons-png.flaticon.com/512/684/684908.png", // ícone exemplo
+  iconSize: [28, 28],
+  iconAnchor: [14, 28],
+  popupAnchor: [0, -25],
+});
+
+// ---------------------
+// Tipos de dados
+// ---------------------
+interface Stop {
+  stopId: string;
+  stopName: string;
+  stopLat: number;
+  stopLon: number;
+}
+
+// ---------------------
+// Função para buscar paradas próximas
+// ---------------------
+async function fetchStops(stop_lat: number, stop_long: number): Promise<Stop[]> {
+  try {
+    const response = await fetch(
+      `${API_URL}/stop/nearby?stop_lat=${stop_lat}&stop_long=${stop_long}`
+    );
+
+    const text = await response.text();
+    const jsonData = JSON.parse(text);
+
+    return Array.isArray(jsonData) ? jsonData : [];
+  } catch (error) {
+    console.error("Erro ao buscar paradas de ônibus:", error);
+    return [];
+  }
+}
+
+// ---------------------
+// Componente principal de interação com o mapa
+// ---------------------
+function ClickHandler() {
+  const [circleCenter, setCircleCenter] = useState<LatLngExpression | null>(null);
+  const [stops, setStops] = useState<Stop[]>([]);
+
+  const map = useMapEvents({
+    click: async (e) => {
+      const lat = e.latlng.lat;
+      const lon = e.latlng.lng;
+
+      // Atualiza o círculo
+      setCircleCenter([lat, lon]);
+
+      // Busca as paradas próximas
+      const data = await fetchStops(lat, lon);
+      setStops(data);
+    },
+  });
+
   return (
-    <MapContainer 
-      center={MAP_CENTER} 
-      zoom={MAP_ZOOM} 
+    <>
+      {circleCenter && (
+        <Circle
+          center={circleCenter}
+          radius={300}
+          pathOptions={{ color: "blue", fillOpacity: 0.2 }}
+        />
+      )}
+
+      {stops.map((stop) => (
+        <Marker
+          key={stop.stopId}
+          position={[stop.stopLat, stop.stopLon]}
+          icon={busStopIcon}
+        >
+          <Popup>
+            <strong>Parada Id:</strong> {stop.stopId} <br />
+            <strong>Nome:</strong> {stop.stopName} <br />
+            <strong>Latitude:</strong> {stop.stopLat} <br />
+            <strong>Longitude:</strong> {stop.stopLon}
+          </Popup>
+        </Marker>
+      ))}
+    </>
+  );
+}
+
+// ---------------------
+// Componente do Mapa
+// ---------------------
+export default function Map() {
+  return (
+    <MapContainer
+      center={MAP_CENTER}
+      zoom={MAP_ZOOM}
       scrollWheelZoom={true}
-      style={{ height: '100vh', width: '100%' }} // Estilização para o mapa
+      className="h-full w-full"
     >
-      {/* Camada base padrão (Overlay) */}
       <TileLayer
         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>'
         url={TILE_URL}
         maxZoom={19}
       />
 
-      {/* Controle de Camadas (Equivalente ao L.control.layers) */}
       <LayersControl position="topright">
-        
-        {/* Camadas de Sobreposição (Overlays) */}
-        
-        {/* Grupo de Camadas: PCDs (Checked = Visível por padrão) */}
-        <LayersControl.Overlay name="PCDs" checked>
+        <LayersControl.Overlay name="Paradas" checked>
           <LayerGroup>
-            {/* Adicione seus elementos PCDs aqui (Marcadores, etc.) */}
+            <ClickHandler />
           </LayerGroup>
         </LayersControl.Overlay>
-
-        {/* Grupo de Camadas: Paradas */}
-        <LayersControl.Overlay name="Paradas">
-          <LayerGroup>
-            {/* Adicione seus elementos de Paradas aqui */}
-          </LayerGroup>
-        </LayersControl.Overlay>
-        
-        {/* Grupo de Camadas: Bairros */}
-        <LayersControl.Overlay name="Bairros">
-          <LayerGroup>
-            {/* Adicione seus elementos de Bairros aqui */}
-          </LayerGroup>
-        </LayersControl.Overlay>
-        
-        {/* Camada Base Explícita (BaseLayer) */}
-        {/* Embora o TileLayer acima já funcione como base, é bom defini-lo aqui para o controle */}
-        <LayersControl.BaseLayer name="Mapa Base" checked>
-          <TileLayer
-            attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>'
-            url={TILE_URL}
-            maxZoom={19}
-          />
-        </LayersControl.BaseLayer>
-        
       </LayersControl>
     </MapContainer>
   );
 }
-
-export default Map;
