@@ -1,7 +1,47 @@
 import { useState } from "react";
 
-export default function FiltersContainer() {
+interface PeopleFilters {
+  minAge: number;
+  maxAge: number;
+  gender: string;
+  disability: string;
+  city: string;
+  neigh: string;
+}
+
+interface StopFilters {
+  city: string;
+  neigh: string;
+}
+
+interface FiltersContainerProps {
+  onSearchPeople: (filters: PeopleFilters) => void;
+  onSearchStops: (filters: StopFilters) => void;
+}
+
+export default function FiltersContainer({ onSearchPeople, onSearchStops }: FiltersContainerProps) {
   const [activeForm, setActiveForm] = useState<"people" | "stops">("people");
+
+  // Estados dos filtros
+  const [minAge, setMinAge] = useState(0);
+  const [maxAge, setMaxAge] = useState(100);
+  const [gender, setGender] = useState("all");
+  const [disability, setDisability] = useState("all");
+  const [cityPeople, setCityPeople] = useState("Recife");
+  const [neighPeople, setNeighPeople] = useState("");
+
+  const [cityStop, setCityStop] = useState("Recife");
+  const [neighStop, setNeighStop] = useState("");
+
+  const handleSubmitPeople = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSearchPeople({ minAge, maxAge, gender, disability, city: cityPeople, neigh: neighPeople });
+  };
+
+  const handleSubmitStops = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSearchStops({ city: cityStop, neigh: neighStop });
+  };
 
   return (
     <section className="flex flex-col items-center w-full my-2 border border-gray-300 rounded-lg p-3 bg-gray-50">
@@ -18,7 +58,6 @@ export default function FiltersContainer() {
         >
           Filtrar Pessoas
         </button>
-
         <button
           type="button"
           onClick={() => setActiveForm("stops")}
@@ -34,27 +73,17 @@ export default function FiltersContainer() {
 
       {/* FORM PESSOAS */}
       {activeForm === "people" && (
-        <form className="flex flex-col items-center w-full">
+        <form onSubmit={handleSubmitPeople} className="flex flex-col items-center w-full">
           {/* Faixa Etária */}
           <fieldset className="flex flex-col items-center border-2 border-black rounded-lg w-full max-w-[250px] p-3 mb-3">
             <legend className="font-semibold">Faixa Etária</legend>
             <div className="flex justify-center gap-3 mb-2">
-              <label htmlFor="minAge">Mínima:</label>
-              <input
-                type="number"
-                id="minAge"
-                className="border border-gray-300 rounded px-2 w-[70px]"
-                min={0}
-              />
+              <label>Mínima:</label>
+              <input type="number" min={0} value={minAge} onChange={(e) => setMinAge(Number(e.target.value))} className="border border-gray-300 rounded px-2 w-[70px]" />
             </div>
             <div className="flex justify-center gap-3">
-              <label htmlFor="maxAge">Máxima:</label>
-              <input
-                type="number"
-                id="maxAge"
-                className="border border-gray-300 rounded px-2 w-[70px]"
-                min={0}
-              />
+              <label>Máxima:</label>
+              <input type="number" min={0} value={maxAge} onChange={(e) => setMaxAge(Number(e.target.value))} className="border border-gray-300 rounded px-2 w-[70px]" />
             </div>
           </fieldset>
 
@@ -68,9 +97,9 @@ export default function FiltersContainer() {
                 <label htmlFor="allGender">Todos</label>
               </div>
               <div className="flex flex-col">
-                <input type="radio" id="maleGender" name="gender" value="M" />
-                <input type="radio" id="femaleGender" name="gender" value="F" />
-                <input type="radio" id="allGender" name="gender" value="all" />
+                <input type="radio" id="maleGender" name="gender" value="M" checked={gender === "M"} onChange={() => setGender("M")} />
+                <input type="radio" id="femaleGender" name="gender" value="F" checked={gender === "F"} onChange={() => setGender("F")} />
+                <input type="radio" id="allGender" name="gender" value="all" checked={gender === "all"} onChange={() => setGender("all")} />
               </div>
             </div>
           </fieldset>
@@ -78,10 +107,7 @@ export default function FiltersContainer() {
           {/* Deficiência */}
           <fieldset className="flex flex-col items-center border-2 border-black rounded-lg w-full max-w-[250px] p-3 mb-3">
             <legend className="font-semibold">Deficiência</legend>
-            <select
-              id="disability"
-              className="w-full border border-gray-300 rounded px-2 py-1"
-            >
+            <select value={disability} onChange={(e) => setDisability(e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1">
               <option value="FISICA">Física</option>
               <option value="VISUAL">Visual</option>
               <option value="AUDITIVA">Auditiva</option>
@@ -94,20 +120,10 @@ export default function FiltersContainer() {
           {/* Cidade */}
           <fieldset className="flex flex-col items-center border-2 border-black rounded-lg w-full max-w-[250px] p-3 mb-3">
             <legend className="font-semibold">Cidade</legend>
-            <select
-              id="city-select-people"
-              className="w-full border border-gray-300 rounded px-2 py-1"
-            >
-              <option value="Abreu e Lima">Abreu e Lima</option>
-              <option value="Araçoiaba">Araçoiaba</option>
+            <select value={cityPeople} onChange={(e) => setCityPeople(e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1">
               <option value="Recife">Recife</option>
               <option value="Olinda">Olinda</option>
               <option value="Paulista">Paulista</option>
-              <option value="Igarassu">Igarassu</option>
-              <option value="Camaragibe">Camaragibe</option>
-              <option value="Jaboatão dos Guararapes">
-                Jaboatão dos Guararapes
-              </option>
               <option value="all">Todos</option>
             </select>
           </fieldset>
@@ -115,63 +131,32 @@ export default function FiltersContainer() {
           {/* Bairro */}
           <fieldset className="flex flex-col items-center border-2 border-black rounded-lg w-full max-w-[250px] p-3 mb-3">
             <legend className="font-semibold">Bairro</legend>
-            <select className="w-full border border-gray-300 rounded px-2 py-1">
-              <option value="">Selecione um bairro</option>
-            </select>
+            <input type="text" value={neighPeople} onChange={(e) => setNeighPeople(e.target.value)} placeholder="Digite o bairro" className="w-full border border-gray-300 rounded px-2 py-1" />
           </fieldset>
 
-          {/* Botões */}
-          <div className="flex flex-col w-full max-w-[250px] p-3">
-            <button type="submit" className="bg-green-500 text-white rounded-lg h-[40px] my-1">
-              Buscar
-            </button>
-            <button
-              type="button"
-              className="bg-gray-300 rounded-lg h-[40px] my-1 hover:bg-gray-400"
-            >
-              Limpar Filtros
-            </button>
-          </div>
+          <button type="submit" className="bg-green-500 text-white rounded-lg h-[40px] my-1 w-full">Buscar</button>
         </form>
       )}
 
       {/* FORM PARADAS */}
       {activeForm === "stops" && (
-        <form className="flex flex-col items-center w-full">
+        <form onSubmit={handleSubmitStops} className="flex flex-col items-center w-full">
           <fieldset className="flex flex-col items-center border-2 border-black rounded-lg w-full max-w-[250px] p-3 mb-3">
             <legend className="font-semibold">Cidade</legend>
-            <select
-              id="city-select-stop"
-              className="w-full border border-gray-300 rounded px-2 py-1"
-            >
+            <select value={cityStop} onChange={(e) => setCityStop(e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1">
               <option value="Recife">Recife</option>
               <option value="Olinda">Olinda</option>
               <option value="Paulista">Paulista</option>
-              <option value="Jaboatão dos Guararapes">
-                Jaboatão dos Guararapes
-              </option>
               <option value="all">Todos</option>
             </select>
           </fieldset>
 
           <fieldset className="flex flex-col items-center border-2 border-black rounded-lg w-full max-w-[250px] p-3 mb-3">
             <legend className="font-semibold">Bairro</legend>
-            <select className="w-full border border-gray-300 rounded px-2 py-1">
-              <option value="">Selecione um bairro</option>
-            </select>
+            <input type="text" value={neighStop} onChange={(e) => setNeighStop(e.target.value)} placeholder="Digite o bairro" className="w-full border border-gray-300 rounded px-2 py-1" />
           </fieldset>
 
-          <div className="flex flex-col w-full max-w-[250px] p-3">
-            <button type="submit" className="bg-green-500 text-white rounded-lg h-[40px] my-1">
-              Buscar
-            </button>
-            <button
-              type="button"
-              className="bg-gray-300 rounded-lg h-[40px] my-1 hover:bg-gray-400"
-            >
-              Limpar Filtros
-            </button>
-          </div>
+          <button type="submit" className="bg-green-500 text-white rounded-lg h-[40px] my-1 w-full">Buscar</button>
         </form>
       )}
     </section>
