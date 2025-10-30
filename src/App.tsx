@@ -1,19 +1,32 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Home from './pages/Home'
 import Login from './pages/Login'
+import PrivateRoute from './components/PrivateRoute'
 
 function App() {
-
   return (
     <BrowserRouter>
-       <Routes>
-        <Route path='/Home' element ={<Home/>}/>
-        <Route path='/Login' element ={<Login/>}/>
-       </Routes>
+      <Routes>
+        {/*Rota padrão: redireciona "/" para "/Login" */}
+        <Route path="/" element={<Navigate to="/Login" replace />} />
+
+        {/* Rota protegida */}
+        <Route
+          path="/Home"
+          element={
+            <PrivateRoute>
+              <Home />
+            </PrivateRoute>
+          }
+        />
+
+        {/* Rota pública */}
+        <Route path="/Login" element={<Login />} />
+
+        {/* Rota fallback para páginas inexistentes */}
+        <Route path="*" element={<Navigate to="/Login" replace />} />
+      </Routes>
     </BrowserRouter>
   )
 }

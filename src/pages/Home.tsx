@@ -3,6 +3,7 @@ import FiltersContainer from "../components/FiltersContainer";
 import Header from "../components/header";
 import Map from "../components/map";
 import Footer from "../components/Footer";
+import { useNavigate } from "react-router-dom";
 
 export default function Home() {
   const [peopleFilters, setPeopleFilters] = useState({
@@ -16,11 +17,15 @@ export default function Home() {
       <Header />
       <main className="flex flex-1 flex-col md:flex-row overflow-hidden">
         <aside className="w-full md:w-[380px] bg-white shadow-md p-4 overflow-y-auto">
-          <FiltersContainer onSearchPeople={setPeopleFilters} onSearchStops={setStopFilters} />
+          <FiltersContainer 
+          onSearchPeople={setPeopleFilters} 
+          onSearchStops={setStopFilters} />
         </aside>
 
         <section className="flex-1 h-[400px] md:h-auto">
-          <Map peopleFilters={peopleFilters} stopFilters={stopFilters} />
+          <Map 
+          peopleFilters={peopleFilters} 
+          stopFilters={stopFilters} />
         </section>
       </main>
       <footer>

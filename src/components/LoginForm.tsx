@@ -1,15 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
+interface User {
+  cpf: string;
+  password: string;
+}
 
 export default function LoginForm() {
-  interface User {
-    cpf: string;
-    password: string;
-  }
-
   const [user, setUser] = useState<User>({ cpf: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  // 🔹 Redirecionamento automático se já estiver logado
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) navigate("/Home");
+  }, [navigate]);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -26,7 +34,7 @@ export default function LoginForm() {
       localStorage.setItem("token", token);
 
       alert("Login realizado com sucesso!");
-      window.location.href = "/Home"; // redireciona após login
+      navigate("/Home"); // 🔹 redireciona via React Router
     } catch (err) {
       console.error(err);
       setError("CPF ou senha inválidos. Tente novamente.");
