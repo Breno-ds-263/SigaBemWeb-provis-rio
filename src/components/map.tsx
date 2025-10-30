@@ -1,131 +1,124 @@
-import { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, Circle, Popup, useMapEvents } from "react-leaflet";
+import React, { useState } from "react";
+import {
+  MapContainer,
+  TileLayer,
+  Circle,
+  Marker,
+  LayersControl,
+  LayerGroup,
+  useMapEvents,
+  Popup,
+} from "react-leaflet";
+import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import type { LatLngExpression } from "leaflet";
+import imageBus from "../assets/busStop.png";
 
-const API_URL = "http://seu-backend-aqui.com";
 const MAP_CENTER: LatLngExpression = [-8.0476, -34.877];
 const MAP_ZOOM = 13;
+const TILE_URL = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+const API_URL = "https://labgeo3.recife.ifpe.edu.br/sigabem/api";
 
 const busStopIcon = new L.Icon({
-  iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
+  iconUrl: imageBus,
   iconSize: [28, 28],
   iconAnchor: [14, 28],
   popupAnchor: [0, -25],
 });
 
-const disabilityColors: Record<string, string> = {
-  FISICA: "#FF9999",
-  VISUAL: "#9999FF",
-  AUDITIVA: "#99FF99",
-  INTELECTUAL: "#FFD580",
-  MULTIPLA: "#E599FF",
-  DEFAULT: "#D3D3D3",
-};
-
-interface PeopleFilters {
-  minAge: number;
-  maxAge: number;
-  gender: string;
-  disability: string;
-  city: string;
-  neigh: string;
+interface Stop {
+  stopId: string;
+  stopName: string;
+  stopLat: number;
+  stopLon: number;
 }
 
-interface StopFilters {
-  city: string;
-  neigh: string;
+async function fetchStops(
+  stop_lat: number,
+  stop_long: number
+): Promise<Stop[]> {
+  try {
+    const response = await fetch(
+      `${API_URL}/stop/nearby?stop_lat=${stop_lat}&stop_long=${stop_long}`
+    );
+
+    const text = await response.text();
+    const jsonData = JSON.parse(text);
+
+    return Array.isArray(jsonData) ? jsonData : [];
+  } catch (error) {
+    console.error("Erro ao buscar paradas de ônibus:", error);
+    return [];
+  }
 }
 
-interface MapProps {
-  peopleFilters: PeopleFilters;
-  stopFilters: StopFilters;
-}
+function ClickHandler() {
+  const [circleCenter, setCircleCenter] = useState<LatLngExpression | null>(
+    null
+  );
+  const [stops, setStops] = useState<Stop[]>([]);
 
-export default function Map({ peopleFilters, stopFilters }: MapProps) {
-  const [pcds, setPcds] = useState<any[]>([]);
-  const [stops, setStops] = useState<any[]>([]);
-  const [circleCenter, setCircleCenter] = useState<LatLngExpression | null>(null);
+  const map = useMapEvents({
+    click: async (e) => {
+      const lat = e.latlng.lat;
+      const lon = e.latlng.lng;
 
-  // Buscar PCDs quando filtros mudam
-  useEffect(() => {
-    async function fetchPcds() {
-      try {
-        const res = await fetch(
-          `${API_URL}/pcd/search?minAge=${peopleFilters.minAge}&maxAge=${peopleFilters.maxAge}&gender=${peopleFilters.gender}&disability=${peopleFilters.disability}&city=${peopleFilters.city}&neigh=${peopleFilters.neigh}`
-        );
-        const data = await res.json();
-        setPcds(data);
-      } catch (err) {
-        console.error("Erro ao buscar PCDs:", err);
-      }
-    }
-    fetchPcds();
-  }, [peopleFilters]);
+      setCircleCenter([lat, lon]);
 
-  // Buscar paradas próximas
-  useEffect(() => {
-    if (!circleCenter) return;
-    async function fetchStops() {
-      try {
-        const res = await fetch(
-          `${API_URL}/stop/nearby?stop_lat=${(circleCenter as any)[0]}&stop_long=${(circleCenter as any)[1]}&city=${stopFilters.city}&neigh=${stopFilters.neigh}`
-        );
-        const data = await res.json();
-        setStops(data);
-      } catch (err) {
-        console.error("Erro ao buscar paradas:", err);
-      }
-    }
-    fetchStops();
-  }, [circleCenter, stopFilters]);
+      const data = await fetchStops(lat, lon);
+      setStops(data);
+    },
+  });
 
   return (
-    <MapContainer center={MAP_CENTER} zoom={MAP_ZOOM} scrollWheelZoom={true} className="h-full w-full">
-      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-
-      {/* PCDs */}
-      {pcds.map((pcd) => (
+    <>
+      {circleCenter && (
         <Circle
-          key={pcd.pcd_id}
-          center={[pcd.residence.latitude, pcd.residence.longitude]}
-          radius={8}
-          pathOptions={{ color: disabilityColors[pcd.disability_type] || disabilityColors.DEFAULT, fillOpacity: 1 }}
+          center={circleCenter}
+          radius={300}
+          pathOptions={{ color: "blue", fillOpacity: 0.2 }}
+        />
+      )}
+
+      {stops.map((stop) => (
+        <Marker
+          key={stop.stopId}
+          position={[stop.stopLat, stop.stopLon]}
+          icon={busStopIcon}
         >
           <Popup>
-            <div>
-              <b>PCD Id:</b> {pcd.pcd_id}<br/>
-              <b>Gênero:</b> {pcd.gender}<br/>
-              <b>Idade:</b> {pcd.age}<br/>
-              <b>Deficiência:</b> {pcd.disability_type}<br/>
-            </div>
-          </Popup>
-        </Circle>
-      ))}
-
-      {/* Paradas */}
-      {stops.map((stop) => (
-        <Marker key={stop.stopId} position={[stop.stopLat, stop.stopLon]} icon={busStopIcon}>
-          <Popup>
-            <div>
-              <b>Parada:</b> {stop.stopName}
-            </div>
+            <strong>Parada Id:</strong> {stop.stopId} <br />
+            <strong>Nome:</strong> {stop.stopName} <br />
+            <strong>Latitude:</strong> {stop.stopLat} <br />
+            <strong>Longitude:</strong> {stop.stopLon}
           </Popup>
         </Marker>
       ))}
-
-      {/* Clique no mapa para definir círculo */}
-      <MapClickHandler setCircleCenter={setCircleCenter} />
-    </MapContainer>
+    </>
   );
 }
 
-// Componente para capturar clique no mapa
-function MapClickHandler({ setCircleCenter }: { setCircleCenter: any }) {
-  useMapEvents({
-    click: (e) => {
-      setCircleCenter([e.latlng.lat, e.latlng.lng]);
-    },
-  });
-  return null;
+export default function Map() {
+  return (
+    <MapContainer
+      center={MAP_CENTER}
+      zoom={MAP_ZOOM}
+      scrollWheelZoom={true}
+      className="h-full w-full"
+    >
+      <TileLayer
+        attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>'
+        url={TILE_URL}
+        maxZoom={19}
+      />
+
+      <LayersControl position="topright">
+        <LayersControl.Overlay name="Paradas" checked>
+          <LayerGroup>
+            <ClickHandler />
+          </LayerGroup>
+        </LayersControl.Overlay>
+      </LayersControl>
+    </MapContainer>
+  );
 }

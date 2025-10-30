@@ -3,7 +3,6 @@ import FiltersContainer from "../components/FiltersContainer";
 import Header from "../components/header";
 import Map from "../components/map";
 import Footer from "../components/Footer";
-import { useNavigate } from "react-router-dom";
 
 export default function Home() {
   const [peopleFilters, setPeopleFilters] = useState({

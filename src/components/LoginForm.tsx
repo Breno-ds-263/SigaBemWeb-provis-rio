@@ -25,10 +25,13 @@ export default function LoginForm() {
     setLoading(true);
 
     try {
-      const response = await axios.post("http://localhost:5000/api/login", {
-        cpf: user.cpf,
-        password: user.password,
-      });
+      const response = await axios.post(
+        "https://labgeo3.recife.ifpe.edu.br/sigabem/api/login",
+        {
+          cpf: user.cpf,
+          password: user.password,
+        }
+      );
 
       const token = response.data.token || response.data;
       localStorage.setItem("token", token);
