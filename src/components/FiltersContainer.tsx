@@ -22,7 +22,7 @@ interface FiltersContainerProps {
 export default function FiltersContainer({ onSearchPeople, onSearchStops }: FiltersContainerProps) {
   const [activeForm, setActiveForm] = useState<"people" | "stops">("people");
 
-  // Estados dos filtros
+  
   const [minAge, setMinAge] = useState(0);
   const [maxAge, setMaxAge] = useState(100);
   const [gender, setGender] = useState("all");
@@ -45,7 +45,7 @@ export default function FiltersContainer({ onSearchPeople, onSearchStops }: Filt
 
   return (
     <section className="flex flex-col items-center w-full my-2 border border-gray-300 rounded-lg p-3 bg-gray-50">
-      {/* Botões de alternância */}
+      
       <div className="flex justify-center gap-2 w-full h-[60px] mb-4">
         <button
           type="button"

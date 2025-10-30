@@ -2,6 +2,7 @@ import { useState } from "react";
 import FiltersContainer from "../components/FiltersContainer";
 import Header from "../components/header";
 import Map from "../components/map";
+import Footer from "../components/Footer";
 
 export default function Home() {
   const [peopleFilters, setPeopleFilters] = useState({
@@ -22,6 +23,9 @@ export default function Home() {
           <Map peopleFilters={peopleFilters} stopFilters={stopFilters} />
         </section>
       </main>
+      <footer>
+        <Footer/>
+      </footer>
     </div>
   );
 }
