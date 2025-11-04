@@ -1,8 +1,9 @@
-import './App.css'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import Home from './pages/Home'
-import Login from './pages/Login'
-import PrivateRoute from './components/PrivateRoute'
+import "./App.css";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import PrivateRoute from "./components/PrivateRoute";
+import Line from "./pages/Lines";
 
 function App() {
   return (
@@ -21,6 +22,15 @@ function App() {
           }
         />
 
+        <Route
+          path="/Lines"
+          element={
+            <PrivateRoute>
+              <Line />
+            </PrivateRoute>
+          }
+        />
+
         {/* Rota pública */}
         <Route path="/Login" element={<Login />} />
 
@@ -28,7 +38,7 @@ function App() {
         <Route path="*" element={<Navigate to="/Login" replace />} />
       </Routes>
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;
