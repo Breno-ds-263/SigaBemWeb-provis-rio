@@ -13,7 +13,7 @@ export default function LoginForm() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  // 🔹 Redirecionamento automático se já estiver logado
+  
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) navigate("/Home");

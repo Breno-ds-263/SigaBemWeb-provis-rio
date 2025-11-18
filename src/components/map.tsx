@@ -118,6 +118,11 @@ export default function Map() {
             <ClickHandler />
           </LayerGroup>
         </LayersControl.Overlay>
+        <LayersControl.Overlay name="Pcds" checked>
+          <LayerGroup>
+            <ClickHandler />
+          </LayerGroup>
+        </LayersControl.Overlay>
       </LayersControl>
     </MapContainer>
   );
