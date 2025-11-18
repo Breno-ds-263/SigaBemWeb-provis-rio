@@ -1,0 +1,15 @@
+/* BOTÕES DE AÇÃO */
+.action-buttons {
+  display: flex; justify-content: center; gap: 15px; padding: 20px;
+}
+.btn {
+  padding: 10px 16px; border: none; border-radius: 6px;
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  transition: background 0.3s;
+}
+.btn.primary { background: #2196F3; color: white; }
+.btn.secondary { background: #2196F3; color: white; }
+.btn.success { background: #28a745; color: white; }
+.btn.info { background: #17a2b8; color: white; }
+.btn.danger { background: #dc3545; color: white; }
+.btn:hover { opacity: 0.85; }
