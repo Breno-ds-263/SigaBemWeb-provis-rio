@@ -1,4 +1,4 @@
-import "./styles.css";
+import "./style.css";
 
 export const Button = ({ label, onClick, type = "primary" }: { label: string; onClick: () => void; type?: "primary" | "secondary" }) => {
   return (

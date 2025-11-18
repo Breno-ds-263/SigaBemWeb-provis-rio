@@ -1,5 +1,5 @@
 import "./style.css"
-import Button from "../TabbleButton"
+import Button from "../Button"
 
 export default function NotificationTable(){
     return(
