@@ -1,8 +1,4 @@
-import React from "react";
-
-// Definições de Tipo para Simulação
-type ActiveFormType = "people" | "stops"; 
-type CityKey = keyof typeof neighborhoodsByCity | "all"; 
+import React, { useState } from "react";
 
 const neighborhoodsByCity = {
   "Abreu e Lima": [
@@ -104,27 +100,57 @@ const neighborhoodsByCity = {
 } as const;
 
 
+type CityKey = keyof typeof neighborhoodsByCity; 
 
-let activeFormMock: ActiveFormType = "people"; 
-let cityPeopleMock: CityKey = "Recife"; 
-let cityStopMock: CityKey = "Recife"; 
-let genderMock = "all"; 
+type Neighborhood = typeof neighborhoodsByCity[CityKey][number];
 
-const availableCities = Object.keys(neighborhoodsByCity) as CityKey[];
-const peopleNeighborhoods = neighborhoodsByCity[cityPeopleMock as keyof typeof neighborhoodsByCity] || [];
-const stopNeighborhoods = neighborhoodsByCity[cityStopMock as keyof typeof neighborhoodsByCity] || [];
+type Dados = {
+  onSubmitDados: (dados: { minAge: number, maxAge: number, gender: string, disability: DisabilityType, cityPeople: String ,city: CityKey, neighborhood: Neighborhood} ) => void;
+};
+
+type DisabilityType =
+  | "FISICA"
+  | "VISUAL"
+  | "AUDITIVA"
+  | "INTELECTUAL"
+  | "MULTIPLA"
+  | "all";
+
+export default function FiltersContainer({onSubmitDados}: Dados) {
+
+    const enviarDados = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        onSubmitDados({ minAge, maxAge, gender, disability, cityPeople, city: cityPeople, neighborhood: selectedNeighborhood}); 
+        console.log("dados enviados");
+    };
+
+    
+    const [activeForm , setactiveForm] = useState("people"); 
+    const [minAge, setMinAge] = useState(0);
+    const [maxAge, setMaxAge] = useState(100);
+    const [gender, setGender] = useState<"M" | "F" | "all">("all");
+    const [disability, setDisability] = useState<DisabilityType>("all");
+    const [cityPeople, setCityPeople] = useState<CityKey>("Recife"); 
+    
+  
 
 
-export default function FiltersContainerVisual() {
+    const availableCities = Object.keys(neighborhoodsByCity) as CityKey[];
+    const peopleNeighborhoods = neighborhoodsByCity[cityPeople] || [];
+    const [selectedNeighborhood, setSelectedNeighborhood] = useState<Neighborhood | "Todos">("Todos");
+
+    
+    
   return (
-    <section className="flex flex-col items-center w-full my-2 border border-gray-300 rounded-lg p-3 bg-gray-50">
+    <section className="flex flex-col items-center border border-gray-300 rounded-lg p-3 bg-gray-50 overflow-y-auto">
       
    
       <div className="flex justify-center gap-2 w-full h-[60px] mb-4">
         <button
           type="button"
+          onClick={() => setactiveForm("people")}
           className={`flex-1 border border-green-800 rounded-lg text-sm h-[50px] transition-all ${
-            activeFormMock === "people" 
+            activeForm === "people" 
               ? "bg-green-500 text-white border-green-700" 
               : "bg-gray-100 hover:bg-gray-200"
           }`}
@@ -133,9 +159,9 @@ export default function FiltersContainerVisual() {
         </button>
         <button
           type="button"
-          // Comparação agora funciona sem erro
+          onClick={() => setactiveForm("stops")}
           className={`flex-1 border border-green-800 rounded-lg text-sm h-[50px] transition-all ${
-            activeFormMock === "stops" 
+            activeForm=== "stops" 
               ? "bg-green-500 text-white border-green-700" 
               : "bg-gray-100 hover:bg-gray-200"
           }`}
@@ -145,9 +171,8 @@ export default function FiltersContainerVisual() {
       </div>
 
       {/* Formulário de Filtrar Pessoas */}
-      {activeFormMock === "people" && (
-        // Eventos de formulário e handlers de mudança removidos
-        <form className="flex flex-col items-center w-full">
+      {activeForm === "people" && (
+        <form className="flex flex-col items-center w-full overflow-auto" onSubmit={enviarDados}>
           
           {/* Faixa Etária */}
           <fieldset className="flex flex-col items-center border-2 border-black rounded-lg w-full max-w-[250px] p-3 mb-3">
@@ -156,8 +181,8 @@ export default function FiltersContainerVisual() {
               <label>Mínima:</label>
               <input
                 type="number"
-                min={0}
-                defaultValue={0} 
+                value={minAge}
+                onChange={(e) => setMinAge(Number(e.target.value))}
                 className="border border-gray-300 rounded px-2 w-[70px]"
               />
             </div>
@@ -165,8 +190,8 @@ export default function FiltersContainerVisual() {
               <label>Máxima:</label>
               <input
                 type="number"
-                min={0}
-                defaultValue={100} 
+                value={maxAge}
+                onChange={(e) => setMaxAge(Number(e.target.value))}
                 className="border border-gray-300 rounded px-2 w-[70px]"
               />
             </div>
@@ -184,24 +209,23 @@ export default function FiltersContainerVisual() {
               <div className="flex flex-col space-y-4">
                 <input
                   type="radio"
-                  id="maleGender"
                   name="gender"
                   value="M"
-                  defaultChecked={genderMock === "M"}
+                  onChange={(e) => setGender(e.target.value as "M")}
                 />
                 <input
                   type="radio"
                   id="femaleGender"
                   name="gender"
                   value="F"
-                  defaultChecked={genderMock === "F"}
+                  onChange={(e) => setGender(e.target.value as "F")}
                 />
                 <input
                   type="radio"
                   id="allGender"
                   name="gender"
                   value="all"
-                  defaultChecked={genderMock === "all"}
+                  onChange={(e) => setGender(e.target.value as "all")}
                 />
               </div>
             </div>
@@ -212,6 +236,8 @@ export default function FiltersContainerVisual() {
             <legend className="font-semibold">Deficiência</legend> 
             <select
               defaultValue="all" 
+              value={disability}
+              onChange={(e) => setDisability(e.target.value as DisabilityType)}
               className="w-full border border-gray-300 rounded px-2 py-1"
             >
               <option value="FISICA">Física</option>
@@ -227,7 +253,8 @@ export default function FiltersContainerVisual() {
           <fieldset className="flex flex-col items-center border-2 border-black rounded-lg w-full max-w-[250px] p-3 mb-3">
             <legend className="font-semibold">Cidade</legend>
             <select
-              defaultValue={cityPeopleMock} 
+              value={cityPeople}
+              onChange={(e) => setCityPeople(e.target.value as CityKey)}
               className="w-full border border-gray-300 rounded px-2 py-1"
             >
               {availableCities.map((city) => (
@@ -242,13 +269,14 @@ export default function FiltersContainerVisual() {
           <fieldset className="flex flex-col items-center border-2 border-black rounded-lg w-full max-w-[250px] p-3 mb-3">
             <legend className="font-semibold">Bairro</legend>
             <select
-              // Comparação agora funciona sem erro
-              disabled={cityPeopleMock === "all"}
+              disabled={cityPeople === "all"}
+              value={selectedNeighborhood}
+              onChange={(e) => setSelectedNeighborhood(e.target.value as Neighborhood | "Todos")}
               className={`w-full border border-gray-300 rounded px-2 py-1 ${
-                cityPeopleMock === "all" ? "bg-gray-200" : ""
+                cityPeople === "all" ? "bg-gray-200" : ""
               }`}
             >
-              <option value="">Todos os Bairros</option>
+              <option value="todos">Todos os Bairros</option>
               {peopleNeighborhoods.map((neigh) => (
                 <option key={neigh} value={neigh}>
                   {neigh}
@@ -267,14 +295,14 @@ export default function FiltersContainerVisual() {
       )}
 
       {/* Formulário de Filtrar Paradas */}
-      {activeFormMock === "stops" && (
+      {activeForm === "stops" && (
         <form className="flex flex-col items-center w-full">
           
           {/* Cidade - Paradas */}
           <fieldset className="flex flex-col items-center border-2 border-black rounded-lg w-full max-w-[250px] p-3 mb-3">
             <legend className="font-semibold">Cidade</legend>
             <select
-              defaultValue={cityStopMock} 
+              defaultValue={cityPeople} 
               className="w-full border border-gray-300 rounded px-2 py-1"
             >
               {availableCities.map((city) => (
@@ -289,14 +317,14 @@ export default function FiltersContainerVisual() {
           <fieldset className="flex flex-col items-center border-2 border-black rounded-lg w-full max-w-[250px] p-3 mb-3">
             <legend className="font-semibold">Bairro</legend>
             <select
-              // Comparação agora funciona sem erro
-              disabled={cityStopMock === "all"}
+              
+              disabled={cityPeople === "all"}
               className={`w-full border border-gray-300 rounded px-2 py-1 ${
-                cityStopMock === "all" ? "bg-gray-200" : ""
+                cityPeople === "all" ? "bg-gray-200" : ""
               }`}
             >
               <option value="">Todos os Bairros</option>
-              {stopNeighborhoods.map((neigh) => (
+              {peopleNeighborhoods.map((neigh) => (
                 <option key={neigh} value={neigh}>
                   {neigh}
                 </option>

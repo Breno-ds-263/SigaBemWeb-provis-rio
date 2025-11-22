@@ -9,7 +9,7 @@ export default function Header() {
   }
 
   return (
-    <div className="w-full px-5 py-4 flex justify-between items-center bg-green-500 border border-green-700 shadow-md">
+    <div className="w-full px-5 py-3 flex justify-between items-center bg-green-500 border border-green-700 shadow-md">
       <a href="#" className="text-[24px] text-white font-bold no-underline">
         SigaBem
       </a>
