@@ -5,7 +5,7 @@ import { LayerGroup, LayersControl } from "react-leaflet";
 import FiltersContainer from './FiltersContainer'; 
 import StopLayer from './StopLayer'; 
 import PcdLayer from './PcdLayer'; 
-import { type DadosFiltro } from "../Hooks/MapTypes";
+import { type DadosFiltro } from "../constants/MapTypes";
 
 
 export default function MapHome() {

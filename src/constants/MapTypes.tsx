@@ -1,9 +1,6 @@
-// src/types/MapTypes.ts
-
 import L from "leaflet";
 import imageBus from "../assets/busStop.png"; 
 
-// --- Constantes ---
 export const API_URL = "https://labgeo3.recife.ifpe.edu.br/sigabem/api";
 
 export const busStopIcon = new L.Icon({
@@ -22,7 +19,6 @@ export const disabilityColors: { [key: string]: string } = {
     DEFAULT: '#D3D3D3'
 };
 
-// --- Interfaces ---
 export interface Stop {
     stopId: string;
     stopName: string;
@@ -48,7 +44,6 @@ export interface DadosFiltro {
     neighborhood: string;
 }
 
-// --- Funções de Fetch ---
 
 export async function fetchStops(stop_lat: number, stop_long: number): Promise<Stop[]> {
     try {

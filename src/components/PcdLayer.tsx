@@ -1,5 +1,3 @@
-// src/layers/PcdLayer.tsx
-
 import React, { useState, useEffect } from "react";
 import { Circle, Popup } from "react-leaflet";
 import {
@@ -7,7 +5,7 @@ import {
     type DadosFiltro,
     fetchPcds,
     disabilityColors
-} from "../Hooks/MapTypes";
+} from "../constants/MapTypes";
 
 interface PcdLayerProps {
     dadosFiltro: DadosFiltro;

@@ -1,17 +1,16 @@
-// src/components/BaseMap.tsx
 import React, { type ReactNode } from "react";
 import { MapContainer, TileLayer, LayersControl } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
-// Mantenha as constantes no componente base ou mova-as para um arquivo de constantes
+
 const MAP_CENTER: [number, number] = [-8.0476, -34.877];
 const MAP_ZOOM = 13;
 const TILE_URL = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
 
 interface BaseMapProps {
-  children?: ReactNode; // Para injetar camadas ou controles
-  center?: [number, number]; // Torne o centro opcional/customizável
-  zoom?: number; // Torne o zoom opcional/customizável
+  children?: ReactNode; 
+  center?: [number, number]; 
+  zoom?: number; 
 }
 
 export default function BaseMap({ 
@@ -24,7 +23,7 @@ export default function BaseMap({
       center={center as [number, number]}
       zoom={zoom}
       scrollWheelZoom={true}
-      className="h-full w-full" // Use Tailwind, mas garanta que o pai tem altura definida
+      className="h-full w-full" 
     >
       <TileLayer
         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>'

@@ -1,5 +1,3 @@
-// src/layers/StopLayer.tsx
-
 import React, { useState } from "react";
 import { Circle, Marker, Popup, useMapEvents } from "react-leaflet";
 import type { LatLngExpression } from "leaflet";
@@ -7,7 +5,7 @@ import {
     type Stop,
     fetchStops,
     busStopIcon
-} from "../Hooks/MapTypes"; 
+} from "../constants/MapTypes"; 
 
 export default function StopLayer() {
     const [circleCenter, setCircleCenter] = useState<[number, number] | null>(null);
@@ -18,7 +16,6 @@ export default function StopLayer() {
             const lat = e.latlng.lat;
             const lon = e.latlng.lng;
 
-            // setCircleCenter espera uma tupla [number, number] ou null
             setCircleCenter([lat, lon]);
 
             const data = await fetchStops(lat, lon);
@@ -31,7 +28,7 @@ export default function StopLayer() {
             {circleCenter && (
                 <Circle
                     center={circleCenter}
-                    radius={300} // Raio de 300 metros
+                    radius={300} 
                     pathOptions={{ color: "blue", fillOpacity: 0.2 }}
                 />
             )}
