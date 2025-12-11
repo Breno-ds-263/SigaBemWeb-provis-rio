@@ -1,7 +1,6 @@
-import FiltersContainer from "../components/FiltersContainer";
 import Footer from "../components/Footer";
 import Header from "../components/header";
-import Map from "../components/map";
+import MapHome from "../components/MapHome";
 
 export default function Line() {
   return (
@@ -11,7 +10,7 @@ export default function Line() {
         <aside className="w-full md:w-[380px] bg-white shadow-md p-4 overflow-y-auto"></aside>
 
         <section className="flex-1 h-[400px] md:h-auto">
-          <Map />
+          <MapHome />
         </section>
       </main>
       <footer>

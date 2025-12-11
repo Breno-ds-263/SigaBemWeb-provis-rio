@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import PrivateRoute from "./components/PrivateRoute";
 import Line from "./pages/Lines";
+import Notifications from "./components/Notifications";
 
 function App() {
   return (
@@ -27,6 +28,16 @@ function App() {
           element={
             <PrivateRoute>
               <Line />
+            </PrivateRoute>
+          }
+        />
+
+        {/* Rota de Notificações */}
+        <Route
+          path="/Notifications"
+          element={
+            <PrivateRoute>
+              <Notifications />
             </PrivateRoute>
           }
         />

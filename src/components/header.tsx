@@ -27,7 +27,7 @@ export default function Header() {
           Linhas
         </a>
         <a
-          href="#"
+          href="/Notifications"
           className="relative text-[16px] text-white font-medium no-underline ml-5"
         >
           Notificações
