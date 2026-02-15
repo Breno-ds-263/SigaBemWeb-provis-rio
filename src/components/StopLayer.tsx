@@ -43,7 +43,6 @@ export default function StopLayer() {
                     icon={busStopIcon}
                 >
                     <Popup>
-                        <strong>Parada Id:</strong> {stop.stopId} <br />
                         <strong>Nome:</strong> {stop.stopName} <br />
                     </Popup>
                 </Marker>
