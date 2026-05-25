@@ -1,12 +1,8 @@
 // src/components/BaseMap.tsx
-import React, { type ReactNode } from "react";
+import { type ReactNode } from "react";
 import { MapContainer, TileLayer, LayersControl } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-
-// Mantenha as constantes no componente base ou mova-as para um arquivo de constantes
-const MAP_CENTER: [number, number] = [-8.0476, -34.877];
-const MAP_ZOOM = 13;
-const TILE_URL = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+import { MAP_CENTER, MAP_ZOOM, TILE_URL } from "../../../constants/map";
 
 interface BaseMapProps {
   children?: ReactNode; // Para injetar camadas ou controles

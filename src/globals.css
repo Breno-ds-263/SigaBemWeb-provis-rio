@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-light-green: #333;
+  --color-brand-green: oklch(72.3% 0.219 149.579);
+  --color-brand-dark-green: oklch(62.7% 0.194 149.214);
+  --color-brand-dark-white: #ADADAD;
+}
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: auto;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
