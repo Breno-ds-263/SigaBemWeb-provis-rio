@@ -1,13 +1,10 @@
 // src/layers/StopLayer.tsx
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { Circle, Marker, Popup, useMapEvents } from "react-leaflet";
-import type { LatLngExpression } from "leaflet";
-import {
-    type Stop,
-    fetchStops,
-    busStopIcon
-} from "../Hooks/MapTypes"; 
+import { fetchStops } from "../../../services/mapService";
+import { busStopIcon } from "../../../utils/mapUtils";
+import { type Stop } from "../../../types/map";
 
 export default function StopLayer() {
     const [circleCenter, setCircleCenter] = useState<[number, number] | null>(null);

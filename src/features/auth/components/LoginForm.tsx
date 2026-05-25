@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../AuthContext";
 
 interface User {
   cpf: string;
@@ -11,9 +11,11 @@ export default function LoginForm() {
   const [user, setUser] = useState<User>({ cpf: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const { handleLogin: login } = useAuth();
+
   const navigate = useNavigate();
 
-  
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) navigate("/Home");
@@ -25,22 +27,14 @@ export default function LoginForm() {
     setLoading(true);
 
     try {
-      const response = await axios.post(
-        "https://labgeo3.recife.ifpe.edu.br/sigabem/api/login",
-        {
-          cpf: user.cpf,
-          password: user.password,
-        }
-      );
-
-      const token = response.data.token || response.data;
-      localStorage.setItem("token", token);
-
-      alert("Login realizado com sucesso!");
-      navigate("/Home"); // 🔹 redireciona via React Router
+      await login(user.cpf, user.password);
     } catch (err) {
       console.error(err);
-      setError("CPF ou senha inválidos. Tente novamente.");
+      if(err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Ocorreu um erro ao fazer login.");
+      }
     } finally {
       setLoading(false);
     }
@@ -76,7 +70,7 @@ export default function LoginForm() {
       <button
         type="submit"
         disabled={loading}
-        className="bg-green-500 text-white p-2 rounded hover:bg-green-600 transition disabled:opacity-50"
+        className="bg-brand-green text-white p-2 rounded hover:bg-brand-dark-green transition disabled:opacity-50 cursor-pointer"
       >
         {loading ? "Entrando..." : "Entrar"}
       </button>

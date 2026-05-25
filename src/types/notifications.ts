@@ -1,12 +1,13 @@
-export type DisabilityType = 'FISICA' | 'VISUAL' | 'AUDITIVA' | 'INTELECTUAL' | 'MULTIPLA';
-export type NotificationType = 'mudanca' | 'itinerario' | 'aviso' | 'educativa';
+import type { DisabilityType, Gender } from "./common";
+
+export type NotificationType = "mudanca" | "itinerario" | "aviso" | "educativa";
 
 export interface Feedback {
   id: number;
   line: string;
   date: string;
   disability: DisabilityType;
-  gender: 'M' | 'F';
+  gender: Gender;
   message: string;
   type: string;
 }

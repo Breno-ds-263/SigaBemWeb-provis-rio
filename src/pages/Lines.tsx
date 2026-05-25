@@ -1,11 +1,8 @@
-import Footer from "../components/Footer";
-import Header from "../components/header";
-import MapHome from "../components/MapHome";
+import MapHome from "../features/map/components/MapHome";
 
 export default function Line() {
   return (
-    <div className="flex flex-col h-screen w-full">
-      <Header />
+    <div className="flex flex-col h-full w-full">
       <main className="flex flex-1 flex-col md:flex-row overflow-hidden">
         <aside className="w-full md:w-[380px] bg-white shadow-md p-4 overflow-y-auto"></aside>
 
@@ -13,9 +10,6 @@ export default function Line() {
           <MapHome />
         </section>
       </main>
-      <footer>
-        <Footer />
-      </footer>
     </div>
   );
 }
