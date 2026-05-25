@@ -4,6 +4,7 @@ import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Line from "../pages/Lines";
 import Notifications from "../pages/Notifications";
+import Dashboard from "../pages/Dashboard";
 // import PrivateRoute from "../features/auth/components/PrivateRoute";
 
 export default function AppRoutes() {
@@ -18,6 +19,15 @@ export default function AppRoutes() {
         element={
           // <PrivateRoute>
             <Home />
+          // </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/Dashboard"
+        element={
+          // <PrivateRoute>
+            <Dashboard />
           // </PrivateRoute>
         }
       />
